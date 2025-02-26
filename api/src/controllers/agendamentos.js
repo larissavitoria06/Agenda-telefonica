@@ -1,26 +1,20 @@
-const con = require('../connect'); 
+const express = require('express');
+const routes = express.Router();
 
-const create = (req, res) => {
-    const { telefone, contato, obs } = req.body;
+const Telefones = require('./controllers/telefonicas');
 
-    con.query('INSERT INTO telefones (telefone, nome, obs) VALUES (?, ?, ?)', 
-        [telefone, contato, obs], (err, result) => {
-        if (err) {
-            res.status(500).json({ erro: err });
-        } else {
-            res.status(201).json({ message: 'Contato adicionado!', id: result.insertId });
-        }
-    });
-};
 
-const read = (req, res) => {
-    con.query('SELECT * FROM telefones', (err, result) => {
-        if (err) {
-            res.status(400).json({ erro: err });
-        } else {
-            res.status(200).json(result);
-        }
-    });
-};
+routes.get('/', (req, res) => {
+    res.json({ titulo: 'Agenda de Telefones' });
+});
 
-module.exports = { read, create };
+routes.post('/telefones', Telefones.create);   
+routes.get('/telefones', Telefones.read); 
+routes.delete('/telefones/:telefone_id', Telefones.deletar); 
+routes.put('/telefones/:telefone_id', Telefones.update);     
+
+routes.use((req, res) => {
+    res.status(404).json({ erro: 'Rota não encontrada.' });
+});
+
+module.exports = routes;
