@@ -1,23 +1,9 @@
-const mysql = require('mysql2');
+const mysql = require('mysql');
 
-
-const pool = mysql.createPool({
-    host: 'localhost',    
-    user: 'root',  
-    password: '',       
-    database: 'agenda',   
-    waitForConnections: true,
-    connectionLimit: 10,   
-    queueLimit: 0
+const con = mysql.createConnection({
+    host:'localhost',
+    user: 'root',
+    database:'agenda'
 });
 
-pool.getConnection((err, connection) => {
-    if (err) {
-        console.error('Erro ao conectar ao banco de dados:', err);
-        return;
-    }
-    console.log('Conectado ao banco de dados MySQL!');
-    connection.release(); 
-});
-
-module.exports = pool;
+module.exports = con;
