@@ -1,0 +1,61 @@
+const con = require ('../connect');
+
+const create = (req, res) => {
+    const { telefone, nome, obs } = req.body;
+
+    if (!telefone || !nome) {
+        return res.status(400).json({ erro: 'Telefone e Nome são obrigatórios.' });
+    }
+
+    con.query('INSERT INTO telefones(telefone, nome, obs) VALUES(?, ?, ?)', [telefone, nome, obs], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ erro: 'Ocorreu um erro ao salvar os dados.' });
+        } else {
+            res.status(201).json(result); 
+        }
+    });
+};
+
+const read = (req, res) => {
+    con.query('SELECT * FROM telefones', (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(400).json({ erro: 'Erro ao consultar os dados.' });
+        } else {
+            res.status(200).json(result); 
+        }
+    });
+};
+
+const deletar = (req, res) => {
+    const { telefone_id } = req.params;
+    con.query('DELETE FROM telefones WHERE telefone_id = ?', [telefone_id], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ erro: 'Erro ao tentar excluir o telefone.' });
+        } else if (result.affectedRows === 0) {
+            res.status(404).json({ erro: 'Telefone não encontrado.' });
+        } else {
+            res.status(200).json({ mensagem: 'Telefone excluído com sucesso.' });
+        }
+    });
+};
+
+const update = (req, res) => {
+    const { telefone_id } = req.params;
+    const { telefone, nome, obs } = req.body;
+
+    con.query('UPDATE telefones SET telefone = ?, nome = ?, obs = ? WHERE telefone_id = ?', [telefone, nome, obs, telefone_id], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ erro: 'Erro ao tentar atualizar o telefone.' });
+        } else if (result.affectedRows === 0) {
+            res.status(404).json({ erro: 'Telefone não encontrado.' });
+        } else {
+            res.status(200).json(result); 
+        }
+    });
+};
+
+module.exports = { read, create, deletar, update };
